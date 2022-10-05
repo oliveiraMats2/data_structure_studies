@@ -14,19 +14,36 @@ typedef struct typeNo{
 
 typedef struct typeList{
     typeNo *prim;
+	typeNo *end;
+	unsigned count;
 }typeList;
 
 void criaList(typeList *pList){
     pList->prim = NULL;
+	pList->end = NULL;
+	pList->count = 0;
 }
 
 void insertElementList(typeList *pList, typeStudent *aluno){
     typeNo *aux;
     aux = (typeNo*)malloc(sizeof(typeNo));
-    aux->data = *aluno;
-    aux->prox = pList->prim;
-    pList->prim = aux;
+	
+	aux->data = *aluno;
+	aux->prox = pList->prim;
+	if (pList->prim==NULL){	
+		pList->end = aux;
+	}	
+	pList->prim = aux;
+	pList->count++;   
+}
 
+void InvMostraAluno(typeList *students){
+	typeNo *aux = students->end;
+	while(aux){
+		printf("%s \n", aux->data.nome);
+		printf("%d \n", aux->data.age);
+		aux = aux->prox;
+	}
 }
 
 void mostraAluno(typeList *students){
@@ -50,6 +67,7 @@ int buscaElementInList(typeList *pList, char *nome, typeStudent *retorno){
 
 		aux = aux -> prox;
 	}
+	return 0;
 }
 
 int RemoveElement(typeList *pList, char *nome){
@@ -62,6 +80,7 @@ int RemoveElement(typeList *pList, char *nome){
 		if (!strcmp(nome, aux->data.nome)){//remove firt element
 			tmp = pList->prim;
 			pList->prim = tmp->prox;
+			pList->count--;
 			free(tmp);
 		}
 
@@ -71,19 +90,41 @@ int RemoveElement(typeList *pList, char *nome){
 				aux->prox = tmp->prox;
 				free(tmp);
 
+				pList->count--;
+
 				return 1;
 			}
 
 			aux = aux->prox;
 		}
 	}
+	return 0;
 	
+}
+
+unsigned frequencyLettersList(typeList *pList, char *letter){
+
+	int count = 0;
+	typeNo *aux = pList->prim;
+
+	while(aux!=NULL){
+		if (aux->data.nome[0]==letter[0]){
+			count++;
+		}
+
+		aux = aux->prox;
+	}
+
+	return count;
 }
 
 
 int main(){
-    typeList l1, l2;
+    typeList l1;
     typeStudent aluno, aluno1, aluno2;
+	unsigned frequency;
+	char *compare = "M";
+
     criaList(&l1);
 
     strcpy(aluno.nome, "fulano");
@@ -98,8 +139,13 @@ int main(){
     insertElementList(&l1, &aluno);
 	insertElementList(&l1, &aluno1);
 	insertElementList(&l1, &aluno2);
+	
+	mostraAluno(&l1);
+	printf("===============================\n");
+    InvMostraAluno(&l1);
 
-    mostraAluno(&l1);
+	printf("\n count in list [%d] \n", l1.count);
+
 
 	printf("\n=================================\n");
 
@@ -107,6 +153,11 @@ int main(){
 
 	mostraAluno(&l1);
 	
+	frequency = frequencyLettersList(&l1, compare);
+
+	printf("\n frequency %d \n", frequency);
+
+	printf("\n count in list [%d] \n", l1.count);
     
     return 0;
 
